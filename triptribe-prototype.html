@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TripTribe — creator platform prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --font:'Lato',-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --navy:#051423;--navy2:#0c2d4e;--navy3:#16456f;
+  --blue:#008cff;--blue2:#065af3;--blue1:#53b2fe;--blue-tint:#e8f3ff;
+  --red:#eb2026;--red-tint:#ffecec;
+  --green:#1a7971;--green-tint:#e6f6f1;
+  --amber:#b86e00;--amber-tint:#fff5e0;
+  --ink:#000;--ink2:#4a4a4a;--ink3:#9b9b9b;
+  --bg:#f2f2f2;--card:#fff;--line:#e7e7e7;--field:#fff;--soft:#f7f9fb;
+  --shadow:0 1px 7px 0 rgba(0,0,0,.2);
+  --r:10px;--r-sm:6px;
+  --grad:linear-gradient(93deg,#53b2fe 0%,#065af3 100%);
+  --hero:linear-gradient(180deg,#051423 0%,#0c2d4e 100%);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ink:#f3f6fa;--ink2:#c3cbd6;--ink3:#8893a3;
+    --bg:#0f141a;--card:#1a2129;--line:#2b3440;--field:#141a21;--soft:#151c24;
+    --blue-tint:#10283f;--red-tint:#3a1618;--green-tint:#0f2d29;--amber-tint:#33260a;
+    --shadow:0 1px 7px 0 rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ink:#f3f6fa;--ink2:#c3cbd6;--ink3:#8893a3;
+  --bg:#0f141a;--card:#1a2129;--line:#2b3440;--field:#141a21;--soft:#151c24;
+  --blue-tint:#10283f;--red-tint:#3a1618;--green-tint:#0f2d29;--amber-tint:#33260a;
+  --shadow:0 1px 7px 0 rgba(0,0,0,.55);
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+body{margin:0;min-height:100%;font-family:var(--font);color:var(--ink);background:var(--bg);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--card)}
+h1,h2,h3,h4{margin:0;font-weight:900;letter-spacing:-.01em}
+h1{font-size:34px;line-height:1.15}h2{font-size:22px}h3{font-size:16px}h4{font-size:14px}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--blue);text-decoration:none}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+.muted{color:var(--ink2)}.faint{color:var(--ink3)}.small{font-size:12px}.b{font-weight:700}.xb{font-weight:900}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.between{justify-content:space-between}
+.stack{display:flex;flex-direction:column;gap:12px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.side{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:20px}
+@media (max-width:860px){.side{grid-template-columns:1fr}}
+.ic{width:18px;height:18px;flex:none;vertical-align:-3px}
+.ic.lg{width:28px;height:28px}
+.hide{display:none!important}
+
+/* prototype map */
+.proto{background:#0b1b2b;color:#9fb4c9;font-size:12px;padding:6px 0}
+.proto .wrap{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.proto b{color:#fff;margin-right:6px}
+.proto button{border:1px solid #27425c;background:transparent;color:#c9d7e5;border-radius:12px;padding:2px 10px;font-size:12px}
+.proto button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+
+/* header */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--card);box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.topbar .wrap{display:flex;align-items:center;gap:18px;height:64px}
+.logo{font-size:24px;font-weight:900;letter-spacing:-.03em;line-height:1;white-space:nowrap}
+.logo span{color:var(--red)}.logo em{font-style:normal;color:var(--navy2)}
+:root[data-theme="dark"] .logo em{color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .logo em{color:#fff}}
+.nav{display:flex;gap:4px;margin-left:auto;overflow-x:auto}
+.nav button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 10px;color:var(--ink2);font-size:11px;font-weight:700;border-bottom:2px solid transparent;white-space:nowrap}
+.nav button .ic{width:20px;height:20px}
+.nav button.on{color:var(--blue);border-color:var(--blue)}
+.who{margin-left:auto;display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:20px;padding:4px 12px 4px 4px;background:var(--card);font-weight:700;font-size:13px}
+.who i{width:28px;height:28px;border-radius:50%;background:var(--grad);display:inline-grid;place-items:center;color:#fff;font-style:normal;font-size:12px;font-weight:900}
+.link-btn{border:0;background:none;color:var(--blue);font-weight:700;padding:0}
+
+/* hero + overlapping widget */
+.hero{background:var(--hero);color:#fff;padding:44px 0 112px}
+.hero h1{max-width:620px}
+.hero p{color:#c8d6e4;margin-top:10px;max-width:560px;font-size:15px}
+.widget{margin-top:-86px;position:relative;z-index:2}
+.wtabs{display:flex;gap:4px;background:var(--card);border-radius:var(--r) var(--r) 0 0;padding:0 12px;box-shadow:var(--shadow);width:max-content;max-width:100%;overflow-x:auto}
+.wtabs button{border:0;background:none;padding:12px 14px;font-weight:700;color:var(--ink2);display:flex;align-items:center;gap:6px;border-bottom:3px solid transparent;white-space:nowrap}
+.wtabs button.on{color:var(--blue);border-color:var(--blue)}
+.wbody{background:var(--card);border-radius:0 var(--r) var(--r) var(--r);box-shadow:var(--shadow);padding:22px}
+.wfields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden}
+.wfield{padding:12px 14px;border-right:1px solid var(--line);min-width:0}
+.wfield:last-child{border-right:0}
+.wfield .k{font-size:12px;color:var(--ink2);font-weight:700}
+.wfield .v{font-size:22px;font-weight:900;line-height:1.2;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wfield .s{font-size:12px;color:var(--ink3)}
+.search-cta{margin:-22px auto 0;display:block;position:relative;top:34px;z-index:2}
+
+/* buttons */
+.btn{border:0;border-radius:34px;padding:11px 22px;font-weight:700;display:inline-flex;align-items:center;gap:8px;justify-content:center;line-height:1}
+.btn-grad{background:var(--grad);color:#fff;text-transform:uppercase;letter-spacing:.05em;font-weight:900;padding:14px 38px;font-size:15px}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-line{background:transparent;border:1px solid var(--blue);color:var(--blue)}
+.btn-grey{background:var(--bg);color:var(--ink)}
+.btn-google{background:var(--card);border:1px solid var(--line);color:var(--ink);width:100%;padding:12px}
+.btn-google i{width:22px;height:22px;border-radius:50%;background:#fff;color:#4285f4;border:1px solid var(--line);display:inline-grid;place-items:center;font-style:normal;font-weight:900;font-size:13px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.sm{padding:7px 14px;font-size:13px}
+.btn.full{width:100%}
+
+/* cards, fields */
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:20px}
+.card.pad-0{padding:0}
+.card h3{margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label{font-size:12px;font-weight:700;color:var(--ink2)}
+.field .opt{font-weight:400;color:var(--ink3)}
+.input{border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;background:var(--field);width:100%;min-width:0}
+textarea.input{resize:vertical;min-height:90px}
+.input.invalid{border-color:var(--red);background:var(--red-tint)}
+.err{color:var(--red);font-size:12px;min-height:14px}
+.addon{display:flex}
+.addon span{border:1px solid var(--line);border-right:0;border-radius:var(--r-sm) 0 0 var(--r-sm);padding:10px 10px;background:var(--soft);color:var(--ink2);font-weight:700;white-space:nowrap}
+.addon .input{border-radius:0 var(--r-sm) var(--r-sm) 0}
+.divider{display:flex;align-items:center;gap:10px;color:var(--ink3);font-size:12px;margin:14px 0}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.seg{display:inline-flex;background:var(--bg);border-radius:20px;padding:3px;max-width:100%;overflow-x:auto}
+.seg button{border:0;background:none;padding:6px 14px;border-radius:17px;font-weight:700;color:var(--ink2);white-space:nowrap}
+.seg button.on{background:var(--card);color:var(--blue);box-shadow:var(--shadow)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{padding:10px 14px;border:0;background:none;font-weight:700;color:var(--ink2);border-bottom:2px solid transparent;white-space:nowrap}
+.tab.on{color:var(--blue);border-color:var(--blue)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:14px;font-size:12px;font-weight:700;background:var(--blue-tint);color:var(--blue);white-space:nowrap}
+.chip.red{background:var(--red-tint);color:var(--red)}
+.chip.green{background:var(--green-tint);color:var(--green)}
+.chip.amber{background:var(--amber-tint);color:var(--amber)}
+.chip.grey{background:var(--bg);color:var(--ink2)}
+.chip.navy{background:var(--navy2);color:#fff}
+.banner{border-radius:var(--r);padding:12px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.banner.warn{background:var(--amber-tint);color:var(--amber)}
+.banner.ok{background:var(--green-tint);color:var(--green)}
+
+/* role cards, plan cards */
+.pick{border:2px solid var(--line);border-radius:var(--r);padding:20px;background:var(--card);text-align:left;display:flex;gap:14px;align-items:flex-start;width:100%}
+.pick.on{border-color:var(--blue);background:var(--blue-tint)}
+.pick .ic.lg{color:var(--blue)}
+.plan{position:relative;display:flex;flex-direction:column;gap:12px}
+.plan.rec{border:2px solid var(--blue)}
+.plan .tag{position:absolute;top:-12px;left:20px}
+.plan .price{font-size:30px;font-weight:900}
+.plan .price small{font-size:13px;font-weight:400;color:var(--ink2)}
+.plan ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
+.plan li{display:flex;gap:8px;align-items:flex-start}
+.plan li .ic{color:var(--green);width:16px;height:16px;margin-top:2px}
+.plan .fee{font-size:13px;padding:8px 10px;border-radius:var(--r-sm);background:var(--soft)}
+
+/* stats, bars, lists */
+.stat .n{font-size:26px;font-weight:900;line-height:1.1}
+.stat .d{font-size:12px;color:var(--ink2);margin-top:4px}
+.bar{height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--grad);border-radius:4px;transition:width .5s ease}
+.list{display:flex;flex-direction:column}
+.list > div{padding:12px 0;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:flex-start}
+.list > div:last-child{border-bottom:0}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--blue);margin-top:6px;flex:none}
+.dot.green{background:var(--green)}.dot.red{background:var(--red)}.dot.amber{background:var(--amber)}
+.scroll{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;min-width:620px}
+.tbl th{font-size:12px;color:var(--ink2);text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);font-weight:700}
+.tbl td{padding:12px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.code{font-weight:900;letter-spacing:.06em;background:var(--soft);border:1px dashed var(--blue);color:var(--blue);padding:4px 10px;border-radius:var(--r-sm);white-space:nowrap}
+.bigcode{font-size:28px;font-weight:900;letter-spacing:.12em;color:var(--navy2);background:var(--blue-tint);border:2px dashed var(--blue);border-radius:var(--r);padding:16px;text-align:center;overflow-wrap:anywhere}
+:root[data-theme="dark"] .bigcode{color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bigcode{color:#fff}}
+.qr{width:96px;height:96px;flex:none;border-radius:4px;background:#fff;padding:4px}
+.qr svg{display:block;width:100%;height:100%}
+
+/* trips */
+.trip{padding:0;overflow:hidden;display:flex;flex-direction:column}
+.photo{height:150px;position:relative;color:#fff}
+.photo svg{position:absolute;inset:0;width:100%;height:100%}
+.photo .dest{position:absolute;left:14px;bottom:12px;font-weight:900;font-size:17px;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.photo .flag{position:absolute;top:10px;left:10px}
+.g1{background:linear-gradient(135deg,#ff9a3c,#ff4d6d)}
+.g2{background:linear-gradient(135deg,#5b86e5,#36d1dc)}
+.g3{background:linear-gradient(135deg,#11998e,#38ef7d)}
+.g4{background:linear-gradient(135deg,#8e2de2,#4a00e0)}
+.g5{background:linear-gradient(135deg,#f7971e,#ffd200)}
+.trip .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.trip .price{font-size:22px;font-weight:900}
+.trip .price small{font-size:12px;font-weight:400;color:var(--ink2)}
+.seatbar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.seatbar i{display:block;height:100%;background:var(--green)}
+.seatbar i.hot{background:var(--red)}
+.day{border-left:3px solid var(--blue);padding:4px 0 4px 14px;display:flex;flex-direction:column;gap:6px}
+.day .t{font-weight:900}
+.stop{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:var(--r-sm);background:var(--soft)}
+.stop .ic{color:var(--blue);margin-top:1px}
+.drop{border:2px dashed var(--line);border-radius:var(--r);padding:18px;text-align:center;color:var(--ink2);background:var(--soft);display:flex;flex-direction:column;gap:6px;align-items:center}
+.drop .ic{color:var(--blue);width:26px;height:26px}
+.swatches{display:flex;gap:6px}
+.swatches i{width:22px;height:22px;border-radius:50%;border:2px solid var(--card);box-shadow:0 0 0 1px var(--line)}
+
+/* video studio */
+.steps{display:flex;gap:8px}
+.step{flex:1;padding:10px 12px;border-radius:var(--r-sm);background:var(--card);box-shadow:var(--shadow);color:var(--ink3);font-weight:700;display:flex;gap:8px;align-items:center;font-size:13px}
+.step b{width:22px;height:22px;border-radius:50%;background:var(--bg);display:inline-grid;place-items:center;font-size:12px;flex:none}
+.step.on{color:var(--ink)}.step.on b{background:var(--grad);color:#fff}
+.step.done{color:var(--green)}.step.done b{background:var(--green);color:#fff}
+.style-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.style-grid button{border:2px solid var(--line);border-radius:var(--r);padding:0;overflow:hidden;background:var(--card);text-align:left}
+.style-grid button.on{border-color:var(--blue)}
+.style-grid .thumb{height:64px}
+.style-grid .cap{padding:8px 10px;font-weight:700;font-size:13px}
+.player{aspect-ratio:16/9;border-radius:var(--r);background:radial-gradient(ellipse at 30% 30%,#2a4a6b,#061421 70%);position:relative;display:grid;place-items:center;color:#fff;overflow:hidden}
+.player .play{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;color:var(--blue2)}
+.player .play .ic{width:28px;height:28px}
+.player .cap{position:absolute;left:0;right:0;bottom:0;padding:10px 14px;background:linear-gradient(transparent,rgba(0,0,0,.6));font-size:12px;display:flex;justify-content:space-between}
+.player .brand{position:absolute;top:12px;right:14px;font-weight:900;font-size:13px;opacity:.9}
+.scenes{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:8px}
+.scenes i{display:block;height:34px;border-radius:4px;opacity:.9}
+.line{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:var(--r-sm);background:var(--soft)}
+.line .n{font-weight:900;color:var(--blue);width:20px;flex:none}
+.line [contenteditable]{flex:1;outline:none;border-bottom:1px dashed transparent;min-width:0}
+.line [contenteditable]:focus{border-bottom-color:var(--blue)}
+.thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.thumbs button{border:2px solid var(--line);border-radius:var(--r-sm);overflow:hidden;padding:0;background:var(--card);position:relative;color:#fff;font-weight:900;font-size:13px;text-align:left}
+.thumbs button.on{border-color:var(--blue)}
+.thumbs .t{height:70px;display:flex;align-items:flex-end;padding:8px;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.pub{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:var(--r-sm);flex-wrap:wrap}
+.pub .mark{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:900;flex:none}
+.pub .mark.yt{background:#e62117}.pub .mark.ig{background:linear-gradient(45deg,#f58529,#dd2a7b,#8134af)}.pub .mark.dl{background:var(--navy2)}
+
+/* leads */
+.fit{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:13px;flex:none;position:relative}
+.fit::after{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--card)}
+.fit span{position:relative;z-index:1}
+.pipe{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.pipe div{background:var(--soft);border-radius:var(--r-sm);padding:8px 6px;text-align:center;font-size:11px;color:var(--ink2)}
+.pipe div b{display:block;font-size:18px;color:var(--ink)}
+.pipe div.on{background:var(--blue-tint);color:var(--blue)}
+
+/* toast, modal */
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:#1b2733;color:#fff;padding:12px 18px;border-radius:30px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:all .25s;z-index:60;max-width:92vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;place-items:center;z-index:50;padding:16px}
+.modal.open{display:grid}
+.sheet{background:var(--card);border-radius:var(--r);width:min(540px,100%);padding:24px;display:flex;flex-direction:column;gap:14px;max-height:90vh;overflow:auto}
+.total{display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line)}
+.total.sum{font-weight:900;font-size:18px}
+
+.view{display:none;padding-bottom:60px}
+.view.on{display:block}
+.pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:26px 0 18px}
+.pagehead p{color:var(--ink2);margin-top:4px}
+.section{margin-top:28px}
+.center{max-width:620px;margin:0 auto}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:640px){
+  h1{font-size:26px}.hero{padding:32px 0 100px}
+  .topbar .wrap{height:auto;padding:8px 14px;flex-wrap:wrap}
+  .nav{order:3;width:100%;margin-left:0}
+  .who{margin-left:auto}
+  .btn-grad{padding:13px 26px}
+  .pipe{grid-template-columns:repeat(3,1fr)}
+  .scenes{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9l-2 6-4 2 2-6z"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20v-8M11 20V5M17 20v-5M3 20h18"/></symbol>
+    <symbol id="i-plane" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.5l-7-2V5a2 2 0 0 0-4 0v5.5l-7 2V15l7-1.5V18l-2 1.5V21l4-1 4 1v-1.5L14 18v-4.5l7 1.5z"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 12V4h8l9 9-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/></symbol>
+    <symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-5.5 7-5.5s7 2 7 5.5"/><circle cx="17" cy="9" r="3"/><path d="M17 15c3 0 5 1.8 5 5"/></symbol>
+    <symbol id="i-crown" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 18h18l-1.5-10-4.5 4-3-6-3 6-4.5-4z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5h10"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m-5 5l5-5 5 5M4 20h16"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2-5.5-2.9-5.5 2.9 1-6.2L3 9.6l6.2-.9z"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-bed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18V7m0 6h18v5M3 13V9h7v4"/><circle cx="6.5" cy="10.5" r="1.3"/></symbol>
+    <symbol id="i-food" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a2 2 0 0 0 4 0V3M8 12v9M17 3c-2 1-3 3-3 6v3h3v9"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V6l10-2v12"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="16" r="2"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/><circle cx="16" cy="9" r="1.5"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6l6 6-6 6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 10h18M16 14h2"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4m8-4v4"/></symbol>
+    <symbol id="i-swap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13l-3-3m6 13H7l3 3"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8zM19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9zM5 15l.7 1.6 1.6.7-1.6.7L5 19.6l-.7-1.6L2.7 17.3l1.6-.7z"/></symbol>
+    <symbol id="i-mountain" viewBox="0 0 300 150" preserveAspectRatio="none"><path d="M0 150V108l58-40 50 32 52-52 60 46 40-18 40 26v48z" fill="rgba(0,0,0,.28)"/><circle cx="236" cy="38" r="15" fill="rgba(255,255,255,.75)"/></symbol>
+  </defs>
+</svg>
+
+<div class="proto"><div class="wrap"><b>Prototype</b>
+  <button data-go="auth">Login</button><button data-go="role">Role</button><button data-go="onboard">Creator details</button><button data-go="plan">Pick a plan</button><button data-go="dash">Dashboard</button><button data-go="codes">Codes</button><button data-go="video">Video Studio</button><button data-go="trips">Trips</button><button data-go="leads">Leads</button><button data-go="plans">Plans</button><button data-go="traveler">Traveler app</button>
+</div></div>
+
+<header class="topbar"><div class="wrap">
+  <div class="logo" role="img" aria-label="TripTribe"><span>trip</span><em>tribe</em></div>
+  <nav class="nav" id="nav" aria-label="Creator studio">
+    <button data-go="dash"><svg class="ic"><use href="#i-chart"/></svg>Dashboard</button>
+    <button data-go="trips"><svg class="ic"><use href="#i-plane"/></svg>Trips</button>
+    <button data-go="codes"><svg class="ic"><use href="#i-tag"/></svg>Codes</button>
+    <button data-go="video"><svg class="ic"><use href="#i-video"/></svg>Video Studio</button>
+    <button data-go="leads"><svg class="ic"><use href="#i-users"/></svg>Leads</button>
+    <button data-go="plans"><svg class="ic"><use href="#i-crown"/></svg>Plans</button>
+  </nav>
+  <nav class="nav" id="navT" aria-label="Traveler">
+    <button data-go="traveler"><svg class="ic"><use href="#i-compass"/></svg>Explore</button>
+    <button onclick="toast('My trips: no bookings yet in this prototype')"><svg class="ic"><use href="#i-cal"/></svg>My trips</button>
+  </nav>
+  <div class="who" id="who"><i>?</i><span id="whoName">Login or Create Account</span></div>
+</div></header>
+
+<main>
+
+<!-- LOGIN -->
+<section class="view on" id="v-auth">
+  <div class="hero"><div class="wrap">
+    <h1>Turn your travels into a travel business</h1>
+    <p>Sell tag-along trips built on your own itineraries, market them with your code, and take campaigns from food spots and stays — paid out in one place.</p>
+  </div></div>
+  <div class="wrap widget center">
+    <div class="wtabs" role="tablist">
+      <button class="on" data-auth="login" role="tab"><svg class="ic"><use href="#i-user"/></svg>Login</button>
+      <button data-auth="create" role="tab"><svg class="ic"><use href="#i-sparkle"/></svg>Create account</button>
+    </div>
+    <div class="wbody stack">
+      <button class="btn btn-google" onclick="authGoogle()"><i>G</i><span id="googleLabel">Continue with Google</span></button>
+      <div class="divider">or use email</div>
+      <div class="field"><label for="email">Email</label><input class="input" id="email" type="email" placeholder="you@example.com" autocomplete="email"><div class="err" id="emailErr"></div></div>
+      <div class="field"><label for="pass">Password <span class="opt" id="passHint">(8+ characters)</span></label><input class="input" id="pass" type="password" placeholder="••••••••" autocomplete="current-password"><div class="err" id="passErr"></div></div>
+      <button class="btn btn-grad" onclick="authEmail()" id="authBtn">Login</button>
+      <p class="small faint" id="authNote">By continuing you agree to the creator and traveler terms.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ROLE -->
+<section class="view" id="v-role">
+  <div class="hero" style="padding-bottom:96px"><div class="wrap"><h1>How will you use TripTribe?</h1><p>You can hold both roles on one account and switch any time from the header.</p></div></div>
+  <div class="wrap widget center">
+    <div class="wbody stack" style="border-radius:var(--r)">
+      <div class="grid g2">
+        <button class="pick" data-role="traveler"><svg class="ic lg"><use href="#i-compass"/></svg><div><h3>I’m a traveler</h3><p class="muted">Tag along on creator trips with their day-wise itineraries, and use creator codes for discounts.</p></div></button>
+        <button class="pick" data-role="creator"><svg class="ic lg"><use href="#i-camera"/></svg><div><h3>I’m a creator / influencer</h3><p class="muted">Run trips, generate codes, make videos, take vendor campaigns and get paid.</p></div></button>
+      </div>
+      <div class="err" id="roleErr"></div>
+      <button class="btn btn-grad" onclick="roleContinue()">Continue</button>
+    </div>
+  </div>
+</section>
+
+<!-- CREATOR DETAILS -->
+<section class="view" id="v-onboard">
+  <div class="wrap center">
+    <div class="pagehead"><div><h2>Tell us about your channels</h2><p>Your Instagram and YouTube handles become the places you market codes and the channels Video Studio publishes to.</p></div></div>
+    <div class="card stack">
+      <div class="field"><label for="obName">Name</label><input class="input" id="obName" placeholder="Your name as travelers will see it"><div class="err" id="obNameErr"></div></div>
+      <div class="field"><label for="obIg">Instagram ID</label><div class="addon"><span>@</span><input class="input" id="obIg" placeholder="yourhandle" autocapitalize="off"></div><div class="err" id="obIgErr"></div></div>
+      <div class="field"><label for="obYt">YouTube channel</label><div class="addon"><span>youtube.com/</span><input class="input" id="obYt" placeholder="@yourchannel or channel URL" autocapitalize="off"></div><div class="err" id="obYtErr"></div></div>
+      <div class="field"><label for="obWeb">Website <span class="opt">(optional)</span></label><input class="input" id="obWeb" placeholder="https://"><div class="err" id="obWebErr"></div></div>
+      <div class="row between">
+        <button class="link-btn" onclick="fillSample()">Use sample details</button>
+        <button class="btn btn-grad" onclick="submitOnboard()">Continue</button>
+      </div>
+      <p class="small faint"><svg class="ic"><use href="#i-shield"/></svg> You can create codes and trips right away. Payouts unlock after we verify both handles and your KYC.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PICK A PLAN (onboarding) -->
+<section class="view" id="v-plan">
+  <div class="wrap">
+    <div class="pagehead"><div><h2>Pick a plan</h2><p>Start free. The platform fee drops as you grow; change plans any time.</p></div><div class="seg" id="billSeg1"><button class="on" data-bill="m">Monthly</button><button data-bill="y">Annual · 2 months free</button></div></div>
+    <div class="grid g3" id="planGrid1"></div>
+    <div class="row" style="justify-content:center;margin-top:22px"><button class="btn btn-grad" onclick="finishOnboard()" id="planBtn">Start with Starter</button></div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section class="view" id="v-dash">
+  <div class="wrap">
+    <div class="pagehead"><div><h2 id="dashHello">Good morning</h2><p>Here’s how your travel business is doing this month.</p></div><div class="row"><button class="btn btn-line sm" data-go="codes"><svg class="ic"><use href="#i-tag"/></svg>Generate code</button><button class="btn btn-line sm" data-go="trips"><svg class="ic"><use href="#i-plane"/></svg>New trip</button><button class="btn btn-blue sm" data-go="video"><svg class="ic"><use href="#i-video"/></svg>New video</button></div></div>
+    <div class="banner warn" id="verifyBanner"><svg class="ic"><use href="#i-lock"/></svg><div style="flex:1"><b>Verify your handles to unlock payouts.</b> Codes and trips already work; money stays in your pending balance until both are verified.</div><button class="btn btn-grey sm" id="vIg" onclick="verify('ig')">Verify Instagram</button><button class="btn btn-grey sm" id="vYt" onclick="verify('yt')">Verify YouTube</button></div>
+    <div class="grid g4" style="margin-top:16px">
+      <div class="card stat"><div class="n" id="stEarn">₹0</div><div class="d">Earned this month · <span id="stPending">₹0 pending payout</span></div></div>
+      <div class="card stat"><div class="n" id="stRedeem">0</div><div class="d">Code uses · 2 active codes</div></div>
+      <div class="card stat"><div class="n">2</div><div class="d">Live tag-along trips · 24 of 36 seats sold</div></div>
+      <div class="card stat"><div class="n">4</div><div class="d">New vendor leads · 2 direct requests</div></div>
+    </div>
+    <div class="side section">
+      <div class="card"><h3>Earnings by stream</h3><div class="stack" id="streams"></div><p class="small faint" style="margin-top:12px" id="feeNote"></p></div>
+      <div class="card"><h3>Recent activity</h3><div class="list" id="activity"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CODES -->
+<section class="view" id="v-codes">
+  <div class="wrap">
+    <div class="pagehead"><div><h2>Coupon codes</h2><p>One code ties you to one activity and one item. Every redemption writes a line to your ledger.</p></div></div>
+    <div class="side">
+      <div class="card stack">
+        <h3>Generate a code</h3>
+        <div class="seg" id="actSeg"><button class="on" data-act="Tag-along trip">Tag-along trip</button><button data-act="Referral">Referral</button></div>
+        <div class="field"><label for="cTarget" id="cTargetLbl">Trip</label><select class="input" id="cTarget"></select></div>
+        <div class="grid g3">
+          <div class="field"><label>Discount</label><div class="seg" id="discSeg"><button data-d="flat">₹ off</button><button class="on" data-d="pct">% off</button><button data-d="none">Track only</button></div></div>
+          <div class="field"><label for="cVal">Value</label><input class="input" id="cVal" type="number" min="0" value="10"></div>
+          <div class="field"><label for="cCap">Usage cap</label><input class="input" id="cCap" type="number" min="0" placeholder="No cap"></div>
+        </div>
+        <div class="grid g2">
+          <div class="field"><label for="cValid">Valid for</label><select class="input" id="cValid"><option>30 days</option><option selected>90 days</option><option>Until the trip starts</option><option>No expiry</option></select></div>
+          <div class="field"><label for="cSlug">Code</label><div class="addon"><span id="cPrefix">YOU-</span><input class="input" id="cSlug" value="GOA10" maxlength="12" style="text-transform:uppercase"></div></div>
+        </div>
+        <div class="banner ok" id="earnPreview"></div>
+        <div class="row between"><p class="small faint">Deep link and QR are created with the code.</p><button class="btn btn-grad" onclick="genCode()">Generate code</button></div>
+      </div>
+      <div class="stack">
+        <div class="card" id="latestCard"><h3>Latest code</h3><div class="row" style="align-items:flex-start"><div class="qr" id="qrBox"></div><div class="stack" style="flex:1;min-width:0"><div class="bigcode" id="bigCode">YOU-GOA20</div><div class="row"><button class="btn btn-line sm" onclick="copyText(currentCode())"><svg class="ic"><use href="#i-copy"/></svg>Copy code</button><button class="btn btn-line sm" onclick="copyText('triptribe.app/c/'+currentCode())"><svg class="ic"><use href="#i-link"/></svg>Copy link</button><button class="btn btn-blue sm" onclick="copyCaption()">Copy caption</button></div></div></div></div>
+        <div class="card"><h3>Caption, ready to paste</h3><p class="muted" id="caption"></p></div>
+      </div>
+    </div>
+    <div class="card section pad-0"><div class="scroll"><table class="tbl" id="codeTbl"><thead><tr><th>Code</th><th>Activity</th><th>Item</th><th>Offer</th><th>Uses</th><th>Earned</th><th>Status</th></tr></thead><tbody></tbody></table></div></div>
+  </div>
+</section>
+
+<!-- VIDEO STUDIO -->
+<section class="view" id="v-video">
+  <div class="wrap">
+    <div class="pagehead"><div><h2>Video Studio</h2><p>Upload your brand kit and describe the trip. You get a scripted, voiced, branded video in three formats to edit and publish.</p></div><div class="row"><span class="chip grey">Voice by ElevenLabs</span><span class="chip grey">Design by Canva</span><span class="chip grey">Templates by Adobe</span><span class="chip" id="renderQuota"></span></div></div>
+    <div class="steps" id="vsteps"><div class="step on"><b>1</b>Brief and brand kit</div><div class="step"><b>2</b>Style, voice and music</div><div class="step"><b>3</b>Review and publish</div></div>
+
+    <div id="vs1" class="section side">
+      <div class="card stack">
+        <h3>Brand kit</h3>
+        <div class="grid g2">
+          <div class="drop"><svg class="ic"><use href="#i-image"/></svg><b>Logo</b><span class="small">PNG or SVG with transparency</span><span class="chip green"><svg class="ic" style="width:14px;height:14px"><use href="#i-check"/></svg>logo.svg uploaded</span></div>
+          <div class="drop"><svg class="ic"><use href="#i-video"/></svg><b>Intro and outro</b><span class="small">Up to 5 s each</span><span class="chip grey">Optional</span></div>
+        </div>
+        <div class="grid g2">
+          <div class="field"><label>Brand colours</label><div class="swatches"><i style="background:#0c2d4e"></i><i style="background:#eb2026"></i><i style="background:#ffd200"></i><i style="background:#ffffff"></i></div></div>
+          <div class="field"><label for="bkFont">Font</label><select class="input" id="bkFont"><option>Lato (brand)</option><option>Playfair Display</option><option>Montserrat</option></select></div>
+        </div>
+        <h3 style="margin-top:8px">Trip description</h3>
+        <textarea class="input" id="brief">5 days in Goa beyond the beaches: Saturday night market in Arpora, a spice farm in Ponda, kayaking in the Sal backwaters at sunrise, a Portuguese food trail in Fontainhas, and sunset at Cabo de Rama. Calm, warm, a little funny. End with my tag-along trip dates in December.</textarea>
+        <div class="field"><label for="linkItin">Link a trip <span class="opt">(pulls its itinerary, places and dates into the script)</span></label><select class="input" id="linkItin"><option>Goa beyond the beaches (12–16 Dec)</option><option>Ladakh in winter (20–27 Jan)</option><option>None</option></select></div>
+      </div>
+      <div class="stack">
+        <div class="card stack"><h3>Media dump</h3><div class="drop"><svg class="ic"><use href="#i-upload"/></svg><b>Drop photos and clips</b><span class="small">We read dates and locations to order scenes</span></div><div class="row"><span class="chip">38 photos</span><span class="chip">6 clips · 4 min</span><span class="chip green">Geotagged: 31</span></div><label class="row small muted" style="margin-top:6px"><input type="checkbox" checked> I own or have rights to this media</label></div>
+        <div class="card stack"><h3>What you’ll get</h3><div class="list"><div><svg class="ic" style="color:var(--blue)"><use href="#i-sparkle"/></svg><div><b>Script in scenes</b><div class="small muted">45–90 s, with on-screen text</div></div></div><div><svg class="ic" style="color:var(--blue)"><use href="#i-mic"/></svg><div><b>Voiceover</b><div class="small muted">Stock voice, or your cloned voice on Pro</div></div></div><div><svg class="ic" style="color:var(--blue)"><use href="#i-music"/></svg><div><b>Music and thumbnails</b><div class="small muted">Licensed track, 3 thumbnail options per format</div></div></div></div><button class="btn btn-grad full" onclick="vstep(2)">Choose style</button></div>
+      </div>
+    </div>
+
+    <div id="vs2" class="section side hide">
+      <div class="card stack">
+        <h3>Design type</h3>
+        <div class="style-grid" id="styleGrid">
+          <button class="on" data-style="Cinematic"><div class="thumb g2"></div><div class="cap">Cinematic</div></button>
+          <button data-style="Vlog"><div class="thumb g1"></div><div class="cap">Vlog</div></button>
+          <button data-style="Montage"><div class="thumb g5"></div><div class="cap">Reel montage</div></button>
+          <button data-style="Documentary"><div class="thumb g4"></div><div class="cap">Documentary</div></button>
+        </div>
+        <h3 style="margin-top:8px">Music mood</h3>
+        <div class="seg" id="moodSeg"><button class="on">Warm and calm</button><button>Upbeat</button><button>Epic</button><button>Lo-fi</button></div>
+        <h3 style="margin-top:8px">Voice</h3>
+        <div class="field"><select class="input" id="voiceSel"><option>Aanya — warm, Indian English (ElevenLabs)</option><option>Kabir — relaxed, Indian English (ElevenLabs)</option><option>Mia — bright, neutral (ElevenLabs)</option><option id="cloneOpt">Your own voice clone — Pro and Elite</option></select></div>
+        <h3 style="margin-top:8px">Formats</h3>
+        <div class="row"><label class="chip"><input type="checkbox" checked> 9:16 Reel / Short</label><label class="chip"><input type="checkbox" checked> 16:9 YouTube</label><label class="chip"><input type="checkbox"> 1:1 Feed</label></div>
+        <div class="row between" style="margin-top:8px"><button class="btn btn-grey" onclick="vstep(1)">Back</button><button class="btn btn-grad" onclick="vidGenerate()" id="genBtn">Generate video</button></div>
+      </div>
+      <div class="card stack" id="genCard"><h3>Generation</h3><p class="muted" id="genMsg">About 4 minutes for a 60-second video. Each scene is voiced separately so you can re-voice one line later.</p><div class="bar"><i id="genBar" style="width:0"></i></div><div class="list" id="genSteps"></div></div>
+    </div>
+
+    <div id="vs3" class="section side hide">
+      <div class="stack">
+        <div class="card">
+          <div class="player"><div class="brand">yourhandle</div><div class="play"><svg class="ic"><use href="#i-play"/></svg></div><div class="cap"><span id="vTitle">Goa beyond the beaches · Cinematic</span><span>0:58 · 16:9</span></div></div>
+          <div class="scenes"><i class="g1"></i><i class="g5"></i><i class="g3"></i><i class="g2"></i><i class="g4"></i><i class="g1"></i></div>
+          <div class="row" style="margin-top:12px"><span class="chip">16:9</span><span class="chip grey">9:16</span><button class="btn btn-line sm" onclick="toast('Re-rendering with your edits · ~90 s')">Re-render</button><button class="btn btn-line sm" onclick="toast('Captions on')">Captions</button><button class="btn btn-line sm" onclick="toast('Music changed to Upbeat')"><svg class="ic"><use href="#i-music"/></svg>Change music</button></div>
+        </div>
+        <div class="card stack"><h3>Script <span class="small muted" style="font-weight:400">— click a line to edit, then re-voice just that scene</span></h3><div class="stack" id="scriptLines"></div></div>
+      </div>
+      <div class="stack">
+        <div class="card stack"><h3>Thumbnail</h3><div class="thumbs" id="thumbs"><button class="on"><div class="t g1">Goa, but not the beaches</div></button><button><div class="t g3">5 days · ₹18,999</div></button><button><div class="t g2">Come with me in Dec</div></button></div></div>
+        <div class="card stack"><h3>Publish</h3>
+          <div class="pub"><div class="mark yt">YT</div><div style="flex:1"><b>YouTube</b><div class="small muted">Connected · title, description and your code pre-filled</div></div><button class="btn btn-blue sm" onclick="publish('YouTube')">Publish</button></div>
+          <div class="pub"><div class="mark ig">IG</div><div style="flex:1"><b>Instagram Reels</b><div class="small muted" id="igState">Needs a Creator or Business account linked to a Facebook Page</div></div><button class="btn btn-line sm" id="igBtn" onclick="igConnect()">Connect</button></div>
+          <div class="pub"><div class="mark dl"><svg class="ic" style="color:#fff"><use href="#i-upload"/></svg></div><div style="flex:1"><b>Download</b><div class="small muted">MP4 + SRT captions, all selected formats</div></div><button class="btn btn-line sm" onclick="toast('Preparing download · 2 files')">Download</button></div>
+          <button class="btn btn-grey full" onclick="copyText('Goa, but not the beaches. Come with me in December: triptribe.app/c/'+currentCode()+' · use code '+currentCode())"><svg class="ic"><use href="#i-copy"/></svg>Copy caption with code</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRIPS -->
+<section class="view" id="v-trips">
+  <div class="wrap">
+    <div class="pagehead"><div><h2>Tag-along trips</h2><p>Design a trip, build its day-wise itinerary from your trip dump or by hand, and sell seats with your code.</p></div></div>
+    <div class="tabs" id="tripTabs"><button class="tab on" data-tt="tag">Your trips</button><button class="tab" data-tt="new">Create a trip</button></div>
+
+    <div id="tt-tag" class="section">
+      <div class="grid g3" id="tripGrid"></div>
+    </div>
+
+    <div id="tt-new" class="section hide">
+      <div class="side">
+        <div class="card stack">
+          <h3>New tag-along trip</h3>
+          <div class="grid g2"><div class="field"><label for="ntTitle">Title</label><input class="input" id="ntTitle" placeholder="Kochi to Munnar, slowly"></div><div class="field"><label for="ntDest">Destination</label><input class="input" id="ntDest" placeholder="Kochi and Munnar, Kerala"></div></div>
+          <div class="grid g3"><div class="field"><label for="ntDates">Dates</label><input class="input" id="ntDates" placeholder="6–10 Mar 2027"></div><div class="field"><label for="ntNights">Nights</label><input class="input" id="ntNights" type="number" value="4"></div><div class="field"><label for="ntSeats">Seats</label><input class="input" id="ntSeats" type="number" value="12"></div></div>
+          <div class="grid g2"><div class="field"><label for="ntSolo">Price per person, solo (₹)</label><input class="input" id="ntSolo" type="number" value="14999"></div><div class="field"><label for="ntGroup">Price per person, group of 3+ (₹)</label><input class="input" id="ntGroup" type="number" value="12999"></div></div>
+          <div class="field"><label for="ntInc">Inclusions</label><input class="input" id="ntInc" value="Stays, breakfast, transfers, guide, one dinner"></div>
+          <div class="field"><label for="ntPolicy">Cancellation</label><select class="input" id="ntPolicy"><option>Free until 14 days before; 50% after</option><option>Free until 30 days before; non-refundable after</option><option>Non-refundable</option></select></div>
+          <div class="err" id="ntErr"></div>
+          <div class="row between"><div class="small faint row"><span id="itinChip" class="chip grey">No itinerary attached yet</span><span>Escrow releases the day after the trip starts.</span></div><button class="btn btn-grad" onclick="createTrip()">Publish trip</button></div>
+        </div>
+        <div class="card stack">
+          <h3>Day-wise itinerary for this trip</h3>
+          <p class="muted">Draft it from your trip dump — photos, booking confirmations, food spots, notes — or add days by hand. Travelers see it on the trip page before they book.</p>
+          <div class="drop"><svg class="ic"><use href="#i-upload"/></svg><b>Drop photos, booking emails, notes</b><span class="small">Stays, food spots and timings are read from dates, locations and confirmations</span></div>
+          <div class="row"><span class="chip">112 photos</span><span class="chip">3 stay confirmations</span><span class="chip">9 food spots</span><span class="chip">notes.txt</span></div>
+          <div class="row"><button class="btn btn-grad" onclick="genItin()" id="itBtn"><svg class="ic"><use href="#i-sparkle"/></svg>Draft from my trip dump</button><button class="btn btn-line" onclick="addDay()">Add a day by hand</button></div>
+          <div class="stack" id="manualDays"></div>
+          <div class="stack hide" id="itOut"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LEADS -->
+<section class="view" id="v-leads">
+  <div class="wrap">
+    <div class="pagehead"><div><h2>Leads</h2><p>Food spots, stays and experiences that want you to market them. Fixed fee on delivery plus a cut of bills from the travelers you send.</p></div><div class="seg" id="leadFilter"><button class="on" data-f="all">All</button><button data-f="direct">Direct requests</button><button data-f="Café">Cafés</button><button data-f="stay">Stays</button><button data-f="Experience">Experiences</button></div></div>
+    <div class="side">
+      <div class="grid g2" id="leadGrid" style="align-content:start"></div>
+      <div class="stack">
+        <div class="card"><h3>Your deals</h3><div class="pipe" id="pipe"></div><p class="small faint" style="margin-top:10px">Fixed fees release from escrow when your content goes live; the per-bill cut accrues as the travelers you send pay.</p></div>
+        <div class="card"><h3>Why these vendors found you</h3><div class="list"><div><span class="dot"></span><div><b>Location overlap</b><div class="small muted">Your Goa trip and Ladakh itinerary are live</div></div></div><div><span class="dot green"></span><div><b>Redemption record</b><div class="small muted">88 visits from your last café campaign</div></div></div><div><span class="dot amber"></span><div><b>Audience fit</b><div class="small muted">Food and slow-travel content, 25–34 skew</div></div></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANS -->
+<section class="view" id="v-plans">
+  <div class="wrap">
+    <div class="pagehead"><div><h2>Plans and platform fee</h2><p>A subscription plus a fee on what you earn. The fee falls as the plan rises; gateway charges (about 2%) are shown separately.</p></div><div class="seg" id="billSeg2"><button class="on" data-bill="m">Monthly</button><button data-bill="y">Annual · 2 months free</button></div></div>
+    <div class="grid g3" id="planGrid2"></div>
+    <div class="card section"><h3>Break-even</h3><p class="muted">Pro saves 7 points of fee, so it pays for itself above about ₹1,430 of monthly on-platform earnings. Elite saves 11 points and pays for itself above about ₹1,820.</p></div>
+  </div>
+</section>
+
+<!-- TRAVELER -->
+<section class="view" id="v-traveler">
+  <div class="hero"><div class="wrap"><h1>Travel with the creators you follow</h1><p>Tag along on their trips — the itinerary behind the reels, with seats you can book — and use their code for a discount.</p></div></div>
+  <div class="wrap widget">
+    <div class="wtabs" role="tablist"><button class="on"><svg class="ic"><use href="#i-users"/></svg>Creator trips</button><button><svg class="ic"><use href="#i-food"/></svg>Food and stays</button></div>
+    <div class="wbody">
+      <div class="wfields">
+        <div class="wfield"><div class="k">Where</div><div class="v">Goa</div><div class="s">Beaches, food trails, backwaters</div></div>
+        <div class="wfield"><div class="k">When</div><div class="v">Dec 2026</div><div class="s">Flexible by a week</div></div>
+        <div class="wfield"><div class="k">With creator</div><div class="v">Anyone</div><div class="s">Or pick from the 12 you follow</div></div>
+        <div class="wfield"><div class="k">Travelers</div><div class="v">2</div><div class="s">Group price from 3</div></div>
+      </div>
+      <button class="btn btn-grad search-cta" onclick="toast('3 creator trips match')">Search</button>
+    </div>
+  </div>
+  <div class="wrap section" style="margin-top:56px">
+    <div class="row between"><h2>Tag along in December</h2><span class="chip red">Seats filling fast</span></div>
+    <div class="grid g3" id="travelerGrid" style="margin-top:14px"></div>
+  </div>
+</section>
+
+</main>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle"><div class="sheet">
+  <div class="row between"><h3 id="mTitle">Book</h3><button class="link-btn" onclick="closeModal()" aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button></div>
+  <p class="muted" id="mSub"></p>
+  <div class="seg" id="mSeg"><button class="on" data-m="solo">Solo</button><button data-m="group">Group of 3+</button></div>
+  <div class="field"><label for="mCode">Have a creator code?</label><div class="row"><input class="input" id="mCode" placeholder="e.g. YOU-GOA20" style="flex:1;text-transform:uppercase"><button class="btn btn-line sm" onclick="applyCode()">Apply</button></div><div class="err" id="mErr"></div></div>
+  <div id="mLines"></div>
+  <button class="btn btn-grad full" id="mPay" onclick="pay()">Pay</button>
+  <p class="small faint">Held in escrow until the trip starts. Free cancellation per the trip’s policy.</p>
+</div></div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const inr=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const v=id=>($('#'+id)||{}).value||'';
+const ig=()=>(S.user&&S.user.ig)||'yourhandle';
+const firstName=()=>((S.user&&S.user.name)||'Creator').split(' ')[0];
+
+const S={
+  user:null, role:null, prefix:'YOU', plan:'starter', bill:'m', fees:{starter:15,pro:8,elite:4},
+  verified:{ig:false,yt:false}, act:'Tag-along trip', dtype:'pct', latest:null, renders:1, vstyle:'Cinematic', igOn:false,
+  mTrip:null, mMode:'solo', mCode:null, cur:'auth',
+  trips:[
+    {id:'goa',title:'Goa beyond the beaches',dest:'Goa',dates:'12–16 Dec 2026',nights:4,solo:18999,group:15999,seats:14,booked:9,g:'g1',tags:['Food trail','Solo friendly']},
+    {id:'ladakh',title:'Ladakh in winter',dest:'Leh, Ladakh',dates:'20–27 Jan 2027',nights:7,solo:46500,group:41900,seats:10,booked:3,g:'g2',tags:['Road trip','Photography']},
+    {id:'bali',title:'Slow week in Bali',dest:'Ubud and Uluwatu',dates:'3–10 Feb 2027',nights:7,solo:72000,group:64000,seats:12,booked:12,g:'g3',tags:['Wellness','Group only']}
+  ],
+  campaigns:[
+    {id:1,vendor:'Café Bodega',kind:'Café',loc:'Anjuna, Goa',fee:8000,cut:12,deliver:'1 Reel + 2 Stories',dates:'Dec 2026',fit:92,direct:true,offer:'15% off the bill',note:'Renewal for the December season',state:'Requested'},
+    {id:5,vendor:'Pangong Lakeside Camps',kind:'Experience',loc:'Pangong, Ladakh',fee:12000,cut:10,deliver:'1 Reel + 1 Story',dates:'Jan 2027',fit:85,direct:true,offer:'Free bonfire night',note:'Saw your Ladakh itinerary',state:'Requested'},
+    {id:2,vendor:'Assagao House',kind:'Boutique stay',loc:'Assagao, Goa',fee:25000,cut:8,deliver:'1 YouTube segment + 1 Reel',dates:'Dec–Jan',fit:88,offer:'₹1,500 off per night',state:'Open'},
+    {id:3,vendor:'Himalayan Brew House',kind:'Café',loc:'Leh',fee:5000,cut:15,deliver:'1 Reel',dates:'Jan 2027',fit:81,offer:'Free dessert',state:'Open'},
+    {id:4,vendor:'Ubud Jungle Lodge',kind:'Stay',loc:'Ubud, Bali',fee:18000,cut:10,deliver:'2 Reels + itinerary feature',dates:'Feb 2027',fit:76,offer:'10% off stays',state:'Open'}
+  ],
+  codes:[
+    {slug:'GOA20',act:'Tag-along trip',target:'Goa beyond the beaches',dtype:'flat',dval:2000,uses:23,cap:50,earned:34500,status:'Active'},
+    {slug:'JOIN',act:'Referral',target:'Traveler sign-up',dtype:'none',dval:0,uses:96,cap:0,earned:4100,status:'Active'}
+  ],
+  vendorEarned:17560, draftItin:false,
+  manual:[]
+};
+
+const PLANS=[
+  {id:'starter',name:'Starter',m:0,y:0,fee:15,blurb:'For your first trips and codes',feats:['1 tag-along trip live at a time','AI itinerary draft from your trip dump: 3 a month','5 active codes','Video Studio: 2 renders a month, 720p, watermark, stock voices','Analytics for the last 7 days','Marketplace: browse, 2 applications a month','Payouts every 14 days, ₹1,000 minimum']},
+  {id:'pro',name:'Pro',m:100,y:1000,fee:8,rec:true,blurb:'For creators who earn every month',feats:['5 tag-along trips live','Unlimited AI itinerary drafts','Unlimited codes, vanity codes, QR and deep links','Video Studio: 20 renders a month, 1080p, no watermark, 1 ElevenLabs voice clone, premium Canva and Adobe templates','Analytics for 90 days, attribution per code and platform','Marketplace: unlimited applications, Verified Creator badge','Creator page at triptribe.app/@you','Weekly payouts, ₹500 minimum','Chat support within 24 hours']},
+  {id:'elite',name:'Elite',m:200,y:2000,fee:4,blurb:'For full-time creators and teams',feats:['Unlimited trips, 3 co-host seats','White-label trip pages, custom domain','Bulk codes and API access','Video Studio: unlimited renders (fair use), 4K, 3 voice clones, multi-language dubbing, priority queue','Full analytics history, audience export','Inbound vendor requests, featured in matching','Same-day payouts, no minimum','Named account manager']}
+];
+const TOKENS={login:'auth',role:'role',details:'onboard',plan:'plan',dashboard:'dash',codes:'codes',video:'video',trips:'trips',leads:'leads',plans:'plans',traveler:'traveler'};
+const STUDIO=['dash','codes','video','trips','leads','plans'];
+
+/* ---------- toast, clipboard, modal ---------- */
+let tt;
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2600)}
+async function copyText(s){try{await navigator.clipboard.writeText(s);toast('Copied')}catch(e){toast('Copy this: '+s)}}
+function closeModal(){$('#modal').classList.remove('open')}
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+/* ---------- routing ---------- */
+function go(view){
+  S.cur=view;
+  $$('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+view));
+  $$('.proto button').forEach(b=>b.classList.toggle('on',b.dataset.go===view));
+  $$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.go===view));
+  $('#nav').classList.toggle('hide',!STUDIO.includes(view));
+  $('#navT').classList.toggle('hide',view!=='traveler');
+  const who=$('#who'), nm=$('#whoName'), av=who.querySelector('i');
+  if(!S.user){nm.textContent='Login or Create Account';av.textContent='?'}
+  else{const n=S.user.name||'You';av.textContent=n[0].toUpperCase();
+    nm.textContent=view==='traveler'?(S.user.ig?n+' · Creator studio':n):STUDIO.includes(view)?n+' · Traveler app':n}
+  if(view==='dash')renderDash(); if(view==='codes'){updatePreview();renderCodes()} if(view==='trips')renderTrips();
+  if(view==='leads')renderLeads(); if(view==='plans')renderPlans(); if(view==='plan')renderPlans(); if(view==='traveler')renderTraveler(); if(view==='video')renderQuota();
+  window.scrollTo({top:0});
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)go(b.dataset.go)});
+$('#who').onclick=()=>{if(!S.user){go('auth');return}
+  if(S.cur==='traveler'){if(S.user.ig)go('dash');else toast('This account is a traveler. Add a creator profile from settings.')}
+  else if(STUDIO.includes(S.cur))go('traveler')};
+
+/* ---------- auth ---------- */
+let authMode='login';
+$$('[data-auth]').forEach(b=>b.onclick=()=>{authMode=b.dataset.auth;$$('[data-auth]').forEach(x=>x.classList.toggle('on',x===b));
+  $('#authBtn').textContent=authMode==='login'?'Login':'Create account';$('#googleLabel').textContent=authMode==='login'?'Continue with Google':'Sign up with Google';
+  $('#passHint').textContent=authMode==='login'?'':'(8+ characters)'});
+function authGoogle(){S.user={name:'',email:'you@gmail.com',google:true};toast(authMode==='login'?'Signed in with Google':'Account created with Google');go('role')}
+function authEmail(){
+  const em=v('email').trim(), pw=v('pass'); let ok=true;
+  const e1=$('#emailErr'),e2=$('#passErr'),i1=$('#email'),i2=$('#pass');
+  e1.textContent='';e2.textContent='';i1.classList.remove('invalid');i2.classList.remove('invalid');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){e1.textContent='Enter a valid email address.';i1.classList.add('invalid');ok=false}
+  if(pw.length<8){e2.textContent='Password needs at least 8 characters.';i2.classList.add('invalid');ok=false}
+  if(!ok)return;
+  S.user={name:'',email:em};toast(authMode==='login'?'Logged in':'Check your inbox to confirm your email');go('role');
+}
+
+/* ---------- role + creator details ---------- */
+$$('[data-role]').forEach(b=>b.onclick=()=>{S.role=b.dataset.role;$$('[data-role]').forEach(x=>x.classList.toggle('on',x===b));$('#roleErr').textContent=''});
+function roleContinue(){if(!S.role){$('#roleErr').textContent='Pick one to continue.';return}
+  if(!S.user)S.user={name:''};
+  if(S.role==='traveler'){S.user.name=S.user.name||'Traveler';go('traveler')}else go('onboard')}
+function fillSample(){$('#obName').value='Aanya Rao';$('#obIg').value='aanya.wanders';$('#obYt').value='@aanyawanders';$('#obWeb').value='https://aanyawanders.in'}
+function setErr(id,msg){$('#'+id+'Err').textContent=msg;$('#'+id).classList.toggle('invalid',!!msg)}
+function submitOnboard(){
+  const name=v('obName').trim(), web=v('obWeb').trim(); let ok=true;
+  let igv=v('obIg').trim().replace(/^https?:\/\/(www\.)?instagram\.com\//i,'').replace(/^@/,'').replace(/\/.*$/,'');
+  let yt=v('obYt').trim().replace(/^https?:\/\/(www\.)?youtube\.com\//i,'').replace(/\/$/,'');
+  setErr('obName',name.length<2||name.length>60?'Name should be 2–60 characters.':'');ok=ok&&!(name.length<2||name.length>60);
+  const igOk=/^[A-Za-z0-9._]{1,30}$/.test(igv);setErr('obIg',igv?(igOk?'':'Handles use letters, numbers, dots and underscores only.'):'Instagram ID is required.');ok=ok&&igOk;
+  const ytOk=/^(@[\w.-]{3,30}|channel\/[\w-]{10,}|c\/[\w.-]{2,}|user\/[\w.-]{2,})$/i.test(yt);setErr('obYt',yt?(ytOk?'':'Use @handle or a channel URL.'):'YouTube channel is required.');ok=ok&&ytOk;
+  const webOk=!web||/^https?:\/\/[^\s]+\.[^\s]{2,}$/i.test(web);setErr('obWeb',webOk?'':'Enter a full URL starting with https://');ok=ok&&webOk;
+  if(!ok)return;
+  if(!S.user)S.user={};S.role='creator';Object.assign(S.user,{name,ig:igv,yt,web});
+  S.prefix=(igv.replace(/[^a-z]/gi,'').slice(0,5)||'YOU').toUpperCase();
+  $('#planBtn').textContent='Start with Starter';go('plan');
+}
+function finishOnboard(){go('dash');toast('Welcome, '+firstName()+'. You are on '+PLANS.find(p=>p.id===S.plan).name+'.')}
+
+/* ---------- plans ---------- */
+function planCard(p){
+  const cur=S.plan===p.id, price=p.m===0?'Free':(S.bill==='m'?inr(p.m)+'<small> / month</small>':inr(p.y)+'<small> / year</small>');
+  const btn=cur?'<button class="btn btn-grey full" disabled>Current plan</button>':`<button class="btn ${p.rec?'btn-blue':'btn-line'} full" onclick="choosePlan('${p.id}')">${p.id==='pro'?'Start 14-day Pro trial':'Choose '+p.name}</button>`;
+  return `<div class="card plan ${p.rec?'rec':''}">${p.rec?'<span class="chip tag">Most creators pick this</span>':''}<div><h3 style="margin:0">${p.name}</h3><p class="muted small">${p.blurb}</p></div><div class="price">${price}</div><div class="fee"><b>${p.fee}% platform fee</b> on what you earn</div><ul>${p.feats.map(f=>`<li><svg class="ic"><use href="#i-check"/></svg><span>${f}</span></li>`).join('')}</ul><div style="margin-top:auto">${btn}</div></div>`;
+}
+function renderPlans(){const h=PLANS.map(planCard).join('');$('#planGrid1').innerHTML=h;$('#planGrid2').innerHTML=h;
+  $$('[data-bill]').forEach(b=>b.classList.toggle('on',b.dataset.bill===S.bill))}
+$$('[data-bill]').forEach(b=>b.onclick=()=>{S.bill=b.dataset.bill;renderPlans()});
+function choosePlan(id){S.plan=id;renderPlans();const p=PLANS.find(x=>x.id===id);
+  $('#planBtn').textContent=id==='pro'?'Start Pro trial':'Start with '+p.name;
+  updatePreview();renderQuota();if(S.cur==='dash')renderDash();if(S.cur==='leads')renderLeads();
+  toast(id==='pro'?'Pro trial started — platform fee is now 8%':'Switched to '+p.name+' — platform fee is now '+p.fee+'%')}
+
+/* ---------- dashboard ---------- */
+function renderDash(){
+  const h=new Date().getHours(), g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  $('#dashHello').textContent=g+', '+firstName();
+  const sum=a=>S.codes.filter(c=>c.act===a).reduce((x,c)=>x+c.earned,0);
+  const groups={'Tag-along trips':sum('Tag-along trip'),'Vendor campaigns':S.vendorEarned,'Referrals':sum('Referral')};
+  const earned=Object.values(groups).reduce((a,n)=>a+n,0), uses=S.codes.reduce((a,c)=>a+c.uses,0), ver=S.verified.ig&&S.verified.yt;
+  $('#stEarn').textContent=inr(earned);$('#stRedeem').textContent=uses.toLocaleString('en-IN');
+  $('#stPending').textContent=ver?inr(earned-28400)+' pending payout':inr(earned)+' pending — verify to release';
+  $('#streams').innerHTML=Object.entries(groups).map(([k,n])=>`<div><div class="row between"><span class="b">${k}</span><span class="xb">${inr(n)}</span></div><div class="bar"><i style="width:${earned?Math.round(n/earned*100):0}%"></i></div></div>`).join('');
+  $('#feeNote').textContent='After the '+S.fees[S.plan]+'% '+PLANS.find(p=>p.id===S.plan).name+' platform fee and 2% gateway. Referral credits are shown in the ledger.';
+  const P=S.prefix;
+  $('#activity').innerHTML=[
+    ['green',`Priya R. booked Goa beyond the beaches with <b>${P}-GOA20</b>`,'₹16,999 · 2 h ago'],
+    ['',`A group of 3 booked Ladakh in winter at the group price`,'₹1,25,700 · today'],
+    ['amber',`New direct request from Pangong Lakeside Camps`,'₹12,000 + 10% of bills · 5 h ago'],
+    ['',`Café Bodega: 6 bills from your Goa group yesterday`,'+₹720 · yesterday'],
+    ['green',`Payout of ₹28,400 sent to your bank account`,'Friday']
+  ].map(a=>`<div><span class="dot ${a[0]}"></span><div style="flex:1"><div>${a[1]}</div><div class="small faint">${a[2]}</div></div></div>`).join('');
+  const b=$('#verifyBanner');
+  $('#vIg').textContent=S.verified.ig?'Instagram verified':'Verify Instagram';$('#vIg').disabled=S.verified.ig;
+  $('#vYt').textContent=S.verified.yt?'YouTube verified':'Verify YouTube';$('#vYt').disabled=S.verified.yt;
+  if(ver){b.className='banner ok';b.innerHTML='<svg class="ic"><use href="#i-check"/></svg><div style="flex:1"><b>Handles verified.</b> Complete KYC (PAN and bank account) and payouts run on your plan’s schedule.</div><button class="btn btn-grey sm" onclick="toast(\'KYC: PAN and bank details collected by the payouts partner\')">Complete KYC</button>'}
+}
+function verify(k){S.verified[k]=true;toast(k==='ig'?'Instagram verified through login':'YouTube channel verified');renderDash()}
+
+/* ---------- codes ---------- */
+const TARGETS={'Tag-along trip':()=>S.trips.map(t=>t.title),'Referral':()=>['Traveler sign-up']};
+const TLABEL={'Tag-along trip':'Trip','Referral':'Applies to'};
+const full=c=>S.prefix+'-'+c.slug;
+function discLabel(c){if(c.act==='Referral')return '₹200 credit';if(c.dtype==='none')return 'Tracking only';if(c.dtype==='pct')return c.dval+'% off';return inr(c.dval)+' off'}
+function currentCode(){return full(S.latest||S.codes[0])}
+function setAct(a){S.act=a;$$('#actSeg button').forEach(b=>b.classList.toggle('on',b.dataset.act===a));
+  $('#cTargetLbl').textContent=TLABEL[a];$('#cTarget').innerHTML=TARGETS[a]().map(t=>`<option>${esc(t)}</option>`).join('');
+  const d={'Tag-along trip':['pct',10],'Referral':['none',0]}[a];
+  setDisc(d[0]);$('#cVal').value=d[1];autoSlug();updatePreview()}
+function setDisc(d){S.dtype=d;$$('#discSeg button').forEach(b=>b.classList.toggle('on',b.dataset.d===d));$('#cVal').disabled=d==='none'}
+function autoSlug(){const t=v('cTarget');const w=(S.act==='Referral'?'JOIN':t.split(/\s+/).find(x=>!/^(the|a|in|of|and|beyond|to|slow|week)$/i.test(x))||t).replace(/[^a-z]/gi,'').toUpperCase().slice(0,7);
+  const val=S.dtype==='none'||(S.dtype==='pct'&&+v('cVal')>=100)?'':v('cVal');$('#cSlug').value=(w+val).slice(0,12)}
+function updatePreview(){
+  $('#cPrefix').textContent=S.prefix+'-';const fee=S.fees[S.plan],dt=S.dtype,dv=+v('cVal')||0,tgt=v('cTarget');let s='';
+  if(S.act==='Tag-along trip'){const t=S.trips.find(x=>x.title===tgt)||S.trips[0];const net=dt==='pct'?t.solo*(1-dv/100):dt==='flat'?t.solo-dv:t.solo;
+    s=`You earn about <b>${inr(net*(1-fee/100)*0.98)}</b> per solo booking: ${inr(net)} after the discount, minus the ${fee}% platform fee and 2% gateway.`}
+  else s='You earn <b>₹100</b> when a referred traveler completes a first booking; they get ₹200 travel credit.';
+  $('#earnPreview').innerHTML='<svg class="ic"><use href="#i-wallet"/></svg><div>'+s+'</div>';
+}
+$$('#actSeg button').forEach(b=>b.onclick=()=>setAct(b.dataset.act));
+$$('#discSeg button').forEach(b=>b.onclick=()=>{setDisc(b.dataset.d);autoSlug();updatePreview()});
+$('#cTarget').onchange=()=>{autoSlug();updatePreview()};$('#cVal').oninput=()=>{autoSlug();updatePreview()};
+function genCode(){
+  const slug=v('cSlug').toUpperCase().replace(/[^A-Z0-9]/g,'');if(slug.length<3){toast('Code needs at least 3 characters after the prefix');return}
+  if(S.codes.some(c=>c.slug===slug)){toast(S.prefix+'-'+slug+' already exists');return}
+  const c={slug,act:S.act,target:v('cTarget'),dtype:S.dtype,dval:+v('cVal')||0,uses:0,cap:+v('cCap')||0,earned:0,status:'Active',valid:v('cValid')};
+  S.codes.unshift(c);S.latest=c;renderCodes();toast('Code '+full(c)+' created');
+}
+function qrSvg(s){const N=21;let h=2166136261;let r='';
+  const fin=(x,y,fx,fy)=>x>=fx&&x<fx+7&&y>=fy&&y<fy+7&&(x===fx||x===fx+6||y===fy||y===fy+6||(x>=fx+2&&x<=fx+4&&y>=fy+2&&y<=fy+4));
+  const sep=(x,y,fx,fy)=>x>=fx-1&&x<fx+8&&y>=fy-1&&y<fy+8;
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){let on;
+    if(fin(x,y,0,0)||fin(x,y,N-7,0)||fin(x,y,0,N-7))on=1;else if(sep(x,y,0,0)||sep(x,y,N-7,0)||sep(x,y,0,N-7))on=0;
+    else{h^=(x*31+y*17+s.charCodeAt((x+y)%s.length));h=Math.imul(h,16777619)>>>0;on=(h>>>13)&1}
+    if(on)r+=`<rect x="${x}" y="${y}" width="1" height="1"/>`}
+  return `<svg viewBox="0 0 ${N} ${N}" shape-rendering="crispEdges" fill="#000" role="img" aria-label="QR code for ${esc(s)}">${r}</svg>`}
+function captionFor(c){const code=full(c),link='triptribe.app/c/'+code;
+  if(c.act==='Tag-along trip'){const t=S.trips.find(x=>x.title===c.target);return `Come to ${c.target} with me${t?', '+t.dates:''}. ${discLabel(c)==='Tracking only'?'Book':discLabel(c)} with code ${code} → ${link}`}
+  return `Join TripTribe with code ${code} and get ₹200 travel credit → ${link}`}
+function copyCaption(){copyText(captionFor(S.latest||S.codes[0]))}
+function renderCodes(){
+  const c=S.latest||S.codes[0];$('#bigCode').textContent=full(c);$('#qrBox').innerHTML=qrSvg(full(c));$('#caption').textContent=captionFor(c);
+  $('#codeTbl tbody').innerHTML=S.codes.map(x=>`<tr><td><span class="code">${full(x)}</span></td><td>${x.act}</td><td>${esc(x.target)}</td><td>${discLabel(x)}</td><td>${x.uses}${x.cap?' / '+x.cap:''}</td><td class="xb">${inr(x.earned)}</td><td><span class="chip ${x.status==='Active'?'green':'grey'}">${x.status}</span></td></tr>`).join('');
+}
+
+/* ---------- video studio ---------- */
+const SCRIPT=['Everyone does Goa for the beaches. Give me five days and I’ll show you the rest.','Saturday night at the Arpora market: eat your way through it before you buy anything.','A spice farm in Ponda, where lunch is cooked over the same wood that grows around you.','Sunrise on the Sal backwaters. Kayak, silence, kingfishers.','Fontainhas: Portuguese houses, bebinca, and the best fish thali in the state.','Cabo de Rama for the last sunset — and I’m bringing fourteen of you here in December.'];
+function renderQuota(){const lim={starter:2,pro:20,elite:'unlimited'}[S.plan];$('#renderQuota').textContent=lim==='unlimited'?S.renders+' renders this month · unlimited on Elite':S.renders+' of '+lim+' renders used this month';
+  const o=$('#cloneOpt');o.disabled=S.plan==='starter';o.textContent=S.plan==='starter'?'Your own voice clone — upgrade to Pro':'Your own voice clone (ElevenLabs)'}
+function vstep(n){$$('#vsteps .step').forEach((s,i)=>{s.classList.toggle('on',i===n-1);s.classList.toggle('done',i<n-1)});['vs1','vs2','vs3'].forEach((id,i)=>$('#'+id).classList.toggle('hide',i!==n-1));$('#vsteps').scrollIntoView({block:'start',behavior:'smooth'})}
+$$('#styleGrid button').forEach(b=>b.onclick=()=>{$$('#styleGrid button').forEach(x=>x.classList.toggle('on',x===b));S.vstyle=b.dataset.style});
+$$('#moodSeg button').forEach(b=>b.onclick=()=>$$('#moodSeg button').forEach(x=>x.classList.toggle('on',x===b)));
+$$('#thumbs button').forEach(b=>b.onclick=()=>$$('#thumbs button').forEach(x=>x.classList.toggle('on',x===b)));
+function vidGenerate(){
+  const lim={starter:2,pro:20,elite:99}[S.plan];if(S.renders>=lim){toast('Render quota used — upgrade for more');go('plans');return}
+  const stages=['Writing the script from your brief and the linked trip','Recording voiceover with ElevenLabs','Designing scenes in Canva with your brand kit','Mixing music under the voice','Rendering 9:16 and 16:9 with captions'];
+  const btn=$('#genBtn');btn.disabled=true;$('#genSteps').innerHTML='';let i=0;
+  const tick=()=>{if(i<stages.length){$('#genSteps').insertAdjacentHTML('beforeend',`<div><svg class="ic" style="color:var(--green)"><use href="#i-check"/></svg><div>${stages[i]}</div></div>`);$('#genBar').style.width=Math.round((i+1)/stages.length*100)+'%';$('#genMsg').textContent=stages[i]+'…';i++;setTimeout(tick,650)}
+    else{btn.disabled=false;S.renders++;renderQuota();$('#vTitle').textContent='Goa beyond the beaches · '+S.vstyle;$('#genMsg').textContent='First cut ready.';
+      $('#scriptLines').innerHTML=SCRIPT.map((l,k)=>`<div class="line"><span class="n">${k+1}</span><div contenteditable="true" spellcheck="false">${l}</div><button class="btn btn-line sm" onclick="toast('Scene ${k+1} re-voiced · 6 s of audio')"><svg class="ic"><use href="#i-mic"/></svg>Re-voice</button><button class="btn btn-grey sm" onclick="toast('Pick another clip for scene ${k+1}')">Swap media</button></div>`).join('');
+      vstep(3);toast('First cut ready — 0:58, two formats')}};
+  tick();
+}
+function publish(p){toast('Published to '+p+'. Caption includes code '+currentCode()+'.')}
+function igConnect(){if(!S.igOn){S.igOn=true;$('#igState').textContent='Connected as @'+ig()+' (Creator account)';$('#igBtn').textContent='Publish';$('#igBtn').className='btn btn-blue sm';toast('Instagram connected')}else publish('Instagram Reels')}
+
+/* ---------- trips ---------- */
+function tripCard(t,mode){
+  const left=t.seats-t.booked,fullT=left<=0,pct=Math.min(100,Math.round(t.booked/t.seats*100));
+  const flag=fullT?'<span class="chip red flag">Sold out · waitlist</span>':`<span class="chip ${left<=4?'red':'navy'} flag">${left} seats left</span>`;
+  const btn=mode==='traveler'?(fullT?`<button class="btn btn-line sm" onclick="toast('Added to the waitlist for ${esc(t.title)}')">Join waitlist</button>`:`<button class="btn btn-grad sm" onclick="openBook('${t.id}')">Book</button>`)
+    :`<button class="btn btn-line sm" onclick="toast('${t.booked} bookings · roster, waitlist and group chat')">Bookings (${t.booked})</button><button class="btn btn-line sm" onclick="shareTrip('${t.id}')"><svg class="ic"><use href="#i-tag"/></svg>Share with code</button>`;
+  return `<div class="card trip"><div class="photo ${t.g}"><svg><use href="#i-mountain"/></svg>${flag}<div class="dest">${esc(t.dest)}</div></div><div class="body"><h3>${esc(t.title)}</h3><div class="small muted"><svg class="ic"><use href="#i-cal"/></svg> ${t.dates} · ${t.nights} nights · hosted by @${ig()}</div><div class="row">${t.tags.map(x=>`<span class="chip grey">${esc(x)}</span>`).join('')}</div><div class="price">${inr(t.solo)} <small>per person · group of 3+ from ${inr(t.group)}</small></div><div class="seatbar"><i class="${pct>=70?'hot':''}" style="width:${pct}%"></i></div><div class="row" style="margin-top:auto">${btn}</div></div></div>`;
+}
+function renderTrips(){$('#tripGrid').innerHTML=S.trips.map(t=>tripCard(t,'creator')).join('')+`<button class="card drop" style="min-height:220px;justify-content:center" onclick="tripTab('new')"><svg class="ic"><use href="#i-plane"/></svg><b>New tag-along trip</b><span class="small">${S.plan==='starter'?'Starter allows 1 live trip — upgrade to run more':'Up to '+(S.plan==='pro'?'5':'unlimited')+' live trips on your plan'}</span></button>`;
+  renderManual()}
+function tripTab(k){$$('#tripTabs .tab').forEach(b=>b.classList.toggle('on',b.dataset.tt===k));['tag','new'].forEach(x=>$('#tt-'+x).classList.toggle('hide',x!==k))}
+$$('#tripTabs .tab').forEach(b=>b.onclick=()=>tripTab(b.dataset.tt));
+function shareTrip(id){const t=S.trips.find(x=>x.id===id);go('codes');setAct('Tag-along trip');$('#cTarget').value=t.title;autoSlug();updatePreview();toast('Set up a code for '+t.title)}
+function createTrip(){const title=v('ntTitle').trim(),dest=v('ntDest').trim(),dates=v('ntDates').trim();
+  if(!title||!dest||!dates){$('#ntErr').textContent='Title, destination and dates are needed to publish.';return}
+  if(S.plan==='starter'&&S.trips.filter(t=>t.seats>t.booked).length>=1){$('#ntErr').textContent='Starter allows one live trip. Upgrade to Pro for five.';return}
+  $('#ntErr').textContent='';S.trips.push({id:'t'+Date.now(),title,dest,dates,nights:+v('ntNights')||3,solo:+v('ntSolo')||0,group:+v('ntGroup')||0,seats:+v('ntSeats')||10,booked:0,g:'g5',tags:S.draftItin?['New','Itinerary ready']:['New','Itinerary pending']});
+  S.draftItin=false;S.manual=[];$('#itOut').classList.add('hide');$('#itOut').innerHTML='';const ch=$('#itinChip');ch.textContent='No itinerary attached yet';ch.className='chip grey';
+  renderTrips();tripTab('tag');toast('Trip published — it is live for travelers')}
+function genItin(){const b=$('#itBtn');b.disabled=true;b.textContent='Reading 112 photos and 3 confirmations…';
+  setTimeout(()=>{b.disabled=false;b.innerHTML='<svg class="ic"><use href="#i-sparkle"/></svg>Redraft from dump';const name=v('ntTitle').trim()||'this trip';
+    const days=[['Day 1 · Fort Kochi','Read from 41 geotagged photos and a stay confirmation',[['bed','Heritage stay near Princess Street','2 nights · booking link attached'],['food','Home-kitchen lunch in Mattancherry','Syrian Christian thali, ₹350 a head'],['pin','Chinese fishing nets at sunset','Walk from the stay, 6:10 pm']]],
+      ['Day 2 · Kochi to Munnar','Drive of 4 h 30 min read from photo timestamps',[['pin','Athirappilly falls','Stop at 10 am, 90 minutes'],['food','Roadside puttu and kadala, Adimali','₹120, cash only'],['bed','Tea-estate bungalow, Pallivasal','2 nights · partner stay']]],
+      ['Day 3 · Munnar','Early start: first photo at 4:52 am',[['pin','Kolukkumalai sunrise by jeep','Book the jeep the evening before'],['food','Breakfast at the estate','Included'],['pin','Tea museum and Eravikulam','Afternoon, tickets online']]]];
+    $('#itOut').classList.remove('hide');$('#itOut').innerHTML=`<div class="banner ok"><svg class="ic"><use href="#i-check"/></svg><div><b>Draft ready for ${esc(name)}.</b> Days 1–3 come from your dump; days 4–5 have no geotagged media and are flagged for you to fill.</div></div>`+
+      days.map(d=>`<div class="day"><div class="t">${d[0]}</div><div class="small faint">${d[1]}</div>${d[2].map(s=>`<div class="stop"><svg class="ic"><use href="#i-${s[0]}"/></svg><div><b>${s[1]}</b><div class="small muted">${s[2]}</div></div></div>`).join('')}</div>`).join('')+
+      `<div class="day" style="border-color:var(--amber)"><div class="t">Days 4–5 · Munnar to Kochi</div><div class="small faint">No geotagged media found — add stops by hand or drop more photos.</div></div><div class="row between"><button class="btn btn-line" onclick="toast('Opened in the builder')">Edit days</button><button class="btn btn-grad" onclick="attachItin()">Attach to this trip</button></div>`;
+  },1400)}
+function attachItin(){S.draftItin=true;const c=$('#itinChip');c.textContent='Itinerary attached · 5 days';c.className='chip green';toast('Itinerary attached — travelers will see it on the trip page')}
+function addDay(){S.manual.push({stops:[]});renderManual();S.draftItin=true;const c=$('#itinChip');c.textContent='Itinerary by hand · '+S.manual.length+(S.manual.length>1?' days':' day');c.className='chip green'}
+function renderManual(){$('#manualDays').innerHTML=S.manual.length?S.manual.map((d,i)=>`<div class="day"><div class="t">Day ${i+1}</div><div class="small faint">${d.stops.length?d.stops.length+' stops':'No stops yet — add a stay, a food spot or a place'}</div><div><button class="link-btn small" onclick="toast('Stop added to day ${i+1}')">Add a stop</button></div></div>`).join(''):''}
+
+/* ---------- leads ---------- */
+let leadF='all';
+function leadCard(c){const fee=S.fees[S.plan],col=c.fit>=85?'var(--green)':c.fit>=78?'var(--blue)':'var(--amber)';
+  const btn=c.state==='Requested'?`<button class="btn btn-blue sm" onclick="applyLead(${c.id})">Accept request</button><button class="btn btn-line sm" onclick="toast('Counter sent: ₹${(c.fee*1.25).toLocaleString('en-IN')} + ${c.cut}%')">Counter</button>`
+    :c.state==='Open'?`<button class="btn btn-line sm" onclick="applyLead(${c.id})">Apply</button>`:`<span class="chip green"><svg class="ic" style="width:14px;height:14px"><use href="#i-check"/></svg>${c.state==='Applied'?'Applied · vendor reviewing':'Accepted · awaiting funding'}</span>`;
+  return `<div class="card stack"><div class="row between" style="align-items:flex-start"><div><h3 style="margin:0">${esc(c.vendor)}</h3><div class="small muted"><svg class="ic"><use href="#i-pin"/></svg> ${esc(c.loc)} · ${esc(c.kind)}</div></div><div class="fit" style="background:conic-gradient(${col} ${c.fit}%,var(--line) 0)" title="Fit score"><span>${c.fit}</span></div></div>
+    <div class="row">${c.direct?'<span class="chip red">Direct request</span>':'<span class="chip">Marketplace</span>'}<span class="chip grey">${c.dates}</span></div>
+    ${c.note?`<p class="small muted">“${esc(c.note)}”</p>`:''}
+    <div><div class="xb" style="font-size:18px">${inr(c.fee)} <span class="small muted" style="font-weight:400">on delivery</span> + ${c.cut}% <span class="small muted" style="font-weight:400">of bills from travelers you send</span></div><div class="small muted">Deliverables: ${esc(c.deliver)} · Traveler offer: ${esc(c.offer)}</div><div class="small faint">You receive ${inr(c.fee*(1-fee/100))} of the fixed fee after the ${fee}% platform fee.</div></div>
+    <div class="row">${btn}</div></div>`}
+function renderLeads(){const list=S.campaigns.filter(c=>leadF==='all'||(leadF==='direct'&&c.direct)||(leadF==='stay'&&/stay/i.test(c.kind))||c.kind===leadF);
+  $('#leadGrid').innerHTML=list.length?list.map(leadCard).join(''):'<div class="card"><p class="muted">No campaigns match this filter yet. New briefs land here as vendors post them.</p></div>';
+  const st={Requested:0,Accepted:0,Funded:1,'Content live':1,Earning:1,Closed:3};S.campaigns.forEach(c=>{if(c.state==='Requested')st.Requested++;if(c.state==='Accepted'||c.state==='Applied')st.Accepted++});
+  $('#pipe').innerHTML=Object.entries(st).map(([k,n])=>`<div class="${n&&k!=='Closed'?'on':''}"><b>${n}</b>${k}</div>`).join('')}
+$$('#leadFilter button').forEach(b=>b.onclick=()=>{leadF=b.dataset.f;$$('#leadFilter button').forEach(x=>x.classList.toggle('on',x===b));renderLeads()});
+function applyLead(id){const c=S.campaigns.find(x=>x.id===id);c.state=c.direct?'Accepted':'Applied';renderLeads();toast(c.direct?'Accepted — '+c.vendor+' is asked to fund escrow':'Applied — '+c.vendor+' usually replies within 2 days')}
+
+/* ---------- traveler app ---------- */
+function renderTraveler(){$('#travelerGrid').innerHTML=S.trips.map(t=>tripCard(t,'traveler')).join('')}
+function openBook(id){S.mTrip=S.trips.find(t=>t.id===id);S.mMode='solo';S.mCode=null;$('#mCode').value='';$('#mErr').textContent='';
+  $$('#mSeg button').forEach(b=>b.classList.toggle('on',b.dataset.m==='solo'));$('#mTitle').textContent='Book '+S.mTrip.title;$('#mSub').textContent=S.mTrip.dates+' · '+S.mTrip.nights+' nights · hosted by @'+ig();
+  renderLines();$('#modal').classList.add('open')}
+$$('#mSeg button').forEach(b=>b.onclick=()=>{S.mMode=b.dataset.m;$$('#mSeg button').forEach(x=>x.classList.toggle('on',x===b));renderLines()});
+function renderLines(){const t=S.mTrip,n=S.mMode==='solo'?1:3,unit=S.mMode==='solo'?t.solo:t.group;let sub=unit*n,disc=0;
+  if(S.mCode){disc=S.mCode.dtype==='pct'?sub*S.mCode.dval/100:S.mCode.dtype==='flat'?S.mCode.dval*n:0}
+  $('#mLines').innerHTML=`<div class="total"><span>${inr(unit)} × ${n} traveler${n>1?'s':''}</span><span>${inr(sub)}</span></div>${S.mCode?`<div class="total" style="color:var(--green)"><span>Code ${full(S.mCode)}</span><span>− ${inr(disc)}</span></div>`:''}<div class="total sum"><span>Total</span><span>${inr(sub-disc)}</span></div>`;
+  $('#mPay').textContent='Pay '+inr(sub-disc)}
+function applyCode(){const s=v('mCode').trim().toUpperCase();const c=S.codes.find(x=>full(x)===s&&x.act==='Tag-along trip'&&x.target===S.mTrip.title);
+  if(!c){$('#mErr').textContent=s?'This code is not valid for this trip.':'Enter a code first.';S.mCode=null}else{$('#mErr').textContent='';S.mCode=c;toast(discLabel(c)==='Tracking only'?'Code applied — your creator gets credit':discLabel(c)+' applied')}renderLines()}
+function pay(){const t=S.mTrip,n=S.mMode==='solo'?1:3;t.booked=Math.min(t.seats,t.booked+n);if(S.mCode){S.mCode.uses+=1;S.mCode.earned+=Math.round((S.mMode==='solo'?t.solo:t.group*3)*(1-S.fees[S.plan]/100))}
+  closeModal();renderTraveler();toast('Booked — '+n+(n>1?' seats':' seat')+' confirmed. Payment held in escrow until the trip starts.')}
+
+/* ---------- init ---------- */
+renderPlans();setAct('Tag-along trip');renderCodes();renderTrips();renderLeads();renderTraveler();renderQuota();
+const start=TOKENS[(location.hash||'').replace('#','')]||'auth';go(start);
+</script>
+</body>
+</html>
